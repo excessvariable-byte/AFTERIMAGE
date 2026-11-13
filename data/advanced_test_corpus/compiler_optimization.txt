@@ -1,0 +1,9 @@
+Compiler Optimization: Intermediate Representation and SSA
+
+A compiler frontend parses source code, performs semantic checks, and lowers the program into an Intermediate Representation (IR). An IR separates language syntax from machine-specific code generation. Control-flow graphs represent basic blocks and their possible transfers of control.
+
+Static Single Assignment (SSA) form gives each variable exactly one definition. When control-flow paths merge, a phi function selects the value produced by the predecessor that was actually taken. SSA makes data dependencies explicit and enables analyses such as constant propagation, liveness, and reaching definitions.
+
+Dead Code Elimination (DCE) removes instructions whose results are never used and that have no observable side effects. Loop-Invariant Code Motion (LICM) moves computations out of a loop when their operands do not change during the loop and moving them preserves program behavior. Other passes include common-subexpression elimination, strength reduction, inlining, and register allocation.
+
+Optimization passes must respect aliasing, exceptions, memory ordering, and language semantics. A transformation that appears mathematically equivalent may be invalid if it changes observable side effects or floating-point behavior. Modern compilers repeatedly transform IR before instruction selection and machine-code emission.

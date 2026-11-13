@@ -1,0 +1,9 @@
+PostgreSQL MVCC Internals: xmin, xmax, VACUUM, and WAL
+
+PostgreSQL uses Multi-Version Concurrency Control (MVCC) so readers can observe a consistent snapshot while concurrent transactions create new row versions. A heap tuple header contains transaction identifiers such as `xmin` and `xmax`. The `xmin` field identifies the transaction that created a tuple version; `xmax` can identify a deleting or superseding transaction, depending on tuple state.
+
+A transaction snapshot determines which committed row versions are visible. Updates usually create a new tuple version rather than overwriting the old version in place. Old versions become dead when no active snapshot can still see them. VACUUM reclaims or makes reusable space occupied by dead tuples and maintains visibility information. Autovacuum performs background cleanup based on workload thresholds.
+
+Write-Ahead Logging (WAL) records changes before the corresponding data pages are written. WAL supports crash recovery and replication. Checkpoints limit recovery work by ensuring dirty pages are flushed according to durability rules. Full-page images may protect against torn-page writes after a checkpoint.
+
+Understanding PostgreSQL MVCC requires connecting tuple visibility, transaction snapshots, `xmin` and `xmax`, VACUUM cleanup, and WAL durability. These mechanisms coordinate concurrency and recovery.

@@ -1,0 +1,34 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "AFTERIMAGE: Configure",
+      "type": "shell",
+      "command": "cmake -S . -B build -DCMAKE_BUILD_TYPE=Debug",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "AFTERIMAGE: Build",
+      "type": "shell",
+      "command": "cmake --build build",
+      "dependsOn": "AFTERIMAGE: Configure",
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "AFTERIMAGE: Run",
+      "type": "shell",
+      "command": "./build/afterimage",
+      "dependsOn": "AFTERIMAGE: Build",
+      "problemMatcher": []
+    },
+    {
+      "label": "AFTERIMAGE: Test",
+      "type": "shell",
+      "command": "ctest --test-dir build --output-on-failure",
+      "dependsOn": "AFTERIMAGE: Build",
+      "problemMatcher": []
+    }
+  ]
+}

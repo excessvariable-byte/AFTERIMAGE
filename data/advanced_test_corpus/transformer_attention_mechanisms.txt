@@ -1,0 +1,9 @@
+Transformer Attention Mechanisms: Scaled Dot-Product and Multi-Head Attention
+
+Scaled dot-product attention maps a query matrix Q, key matrix K, and value matrix V into a weighted combination of values. The standard formula is Attention(Q,K,V) = softmax(QK^T / sqrt(d_k)) V, where d_k is the key dimension. Dividing by the square root of d_k controls the scale of dot products and helps avoid excessively saturated softmax distributions.
+
+Multi-head attention applies several learned linear projections to queries, keys, and values. Each head computes attention in a different representation subspace. The head outputs are concatenated and projected again. This allows the model to represent several relationships in parallel, such as local syntax, long-range references, or positional interactions.
+
+Self-attention lets each token attend to other tokens in the same sequence. Cross-attention uses queries from one sequence and keys and values from another. Causal masks prevent a decoder position from attending to future tokens. Padding masks exclude positions that do not contain real input tokens.
+
+Positional encodings or learned positional embeddings inject token order because plain self-attention is permutation equivariant. Relative position biases provide another way to represent distance and direction. Attention mechanisms are the core operation behind Transformer architectures.

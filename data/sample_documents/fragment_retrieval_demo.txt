@@ -1,0 +1,3 @@
+Graph traversal and scheduling combine breadth first search with a queue.
+The scheduling engine helps us find a task scheduler when only part of the word is remembered.
+A graph traversal visits nodes and records the path through connected components.

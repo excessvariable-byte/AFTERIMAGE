@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#10110f">
+  <title>AFTERIMAGE — Human Memory Retrieval System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,400;0,500;1,400&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;1,6..72,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <a class="brand" href="#">
+        <span class="brand-mark">a<span>·</span></span>
+        <div>
+          <span class="brand-name">AFTERIMAGE</span>
+          <small>HUMAN MEMORY ENGINE</small>
+        </div>
+      </a>
+
+      <div class="side-label">WORKSPACE</div>
+      <nav class="nav-group">
+        <button class="nav active" data-view="search">
+          <span class="nav-icon">⌕</span>
+          <span>Memory Search</span>
+          <kbd>⌘ K</kbd>
+        </button>
+        <button class="nav" data-view="library">
+          <span class="nav-icon">▤</span>
+          <span>Your Library</span>
+          <span class="badge" id="nav-doc-count">0</span>
+        </button>
+        <button class="nav" data-view="developer">
+          <span class="nav-icon">🛠</span>
+          <span>Developer Console</span>
+          <span class="badge dev-badge">DB</span>
+        </button>
+      </nav>
+
+      <div class="side-bottom">
+        <div class="privacy">
+          <span class="pulse"></span>
+          <div>
+            <b>Local &amp; Explainable</b>
+            <small id="db-status-short">Private on this Mac</small>
+          </div>
+        </div>
+        <div class="version">
+          AFTERIMAGE <span>2.0 · MEMORY ENGINE</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace -->
+    <main class="main">
+      <header class="topbar">
+        <div class="crumb">
+          WORKSPACE <span>/</span> <b id="crumb-current">MEMORY SEARCH</b>
+        </div>
+        <div class="top-right">
+          <span class="local-tag"><i class="pulse-dot"></i> LOCAL ENGINE</span>
+          <button class="icon-btn" id="help-btn" title="How memory search works">?</button>
+        </div>
+      </header>
+
+      <!-- 1. MEMORY SEARCH VIEW -->
+      <div id="view-search" class="view-panel">
+        <section class="hero" id="hero">
+          <div class="eyebrow"><span class="spark">✳</span> RECOLLECTION RETRIEVAL</div>
+          <h1>Find what you<br><em>almost</em> remember.</h1>
+          <p>Type like a human remembering. Natural phrases, half-remembered topics, dates like “last week”, or typos — AFTERIMAGE connects your recollection to the exact document, page, and passage.</p>
+        </section>
+
+        <!-- Omnibar / Search Wrap -->
+        <section class="search-section">
+          <div class="search-wrap">
+            <span class="search-icon">⌕</span>
+            <input id="query" type="search" autocomplete="off" spellcheck="false"
+                   placeholder="e.g. “A java assignmnet that i opened last week” or “btree indexing in database”"
+                   aria-label="Search memories">
+            <button id="search-btn">Retrieve <span>↗</span></button>
+          </div>
+
+          <!-- Memory Interpretation Feedback Bar -->
+          <div id="memory-interpretation" class="interpretation-bar hidden">
+            <div class="interp-icon">🧠</div>
+            <div class="interp-content">
+              <div class="interp-title">MEMORY UNDERSTOOD</div>
+              <div id="interp-text" class="interp-text"></div>
+            </div>
+          </div>
+
+          <!-- Filter Drawer -->
+          <div class="filters-bar">
+            <div class="filter-group">
+              <label>DATE:</label>
+              <select id="filter-date">
+                <option value="all">Anytime</option>
+                <option value="day">Past 24 Hours</option>
+                <option value="week">Past Week</option>
+                <option value="month">Past Month</option>
+                <option value="year">Past Year</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label>FORMAT:</label>
+              <div class="pill-group" id="format-pills">
+                <button class="pill active" data-type="all">All</button>
+                <button class="pill" data-type="pdf">PDF</button>
+                <button class="pill" data-type="md">Markdown</button>
+                <button class="pill" data-type="txt">Text</button>
+                <button class="pill" data-type="image">Images</button>
+              </div>
+            </div>
+            <div class="filter-group" style="margin-left: auto;">
+              <button class="text-btn" id="clear-search-btn">Clear search ×</button>
+            </div>
+          </div>
+
+          <!-- Example Queries Chips -->
+          <div class="suggestions" id="suggestions">
+            <span>TRY A RECOLLECTION</span>
+            <button data-query="A java assignmnet that i opened last week">A java assignmnet that i opened last week</button>
+            <button data-query="I saw something in the OOPS that says classes and objects">OOPS classes and objects</button>
+            <button data-query="btree indexing in database">btree indexing in database</button>
+            <button data-query="raft consensus leader heartbeat">raft leader heartbeat</button>
+            <button data-query="operating system virtual memory paging">virtual memory paging</button>
+          </div>
+        </section>
+
+        <!-- Search Results Section -->
+        <section id="results-section" class="results-section hidden">
+          <div class="results-head">
+            <div>
+              <div class="eyebrow">YOUR MEMORY TRAIL</div>
+              <h2 id="results-title">Memories Found</h2>
+              <p id="results-subtitle"></p>
+            </div>
+          </div>
+
+          <div id="results" class="result-list"></div>
+
+          <!-- Related Memories Graph Section -->
+          <div id="related-block" class="related-block hidden">
+            <div class="related-title">
+              <span>✳</span>
+              <div>
+                <b>Related memories (Memory Graph)</b>
+                <small>Connected through shared technical concepts and topic clusters</small>
+              </div>
+            </div>
+            <div id="related" class="related-list"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- 2. LIBRARY VIEW -->
+      <div id="view-library" class="view-panel hidden">
+        <section class="library-section">
+          <div class="eyebrow">LOCAL COLLECTION MANAGEMENT</div>
+          <h2>Your Document Library</h2>
+          <p class="section-copy">Index directories on your Mac. AFTERIMAGE parses native text, renders OCR for scans and images, extracts pages, and creates searchable vector-inverted indices locally.</p>
+
+          <!-- Index Folder Card -->
+          <div class="card index-card">
+            <div class="card-icon">↗</div>
+            <div class="card-body">
+              <b>Index a Folder</b>
+              <span>Scans subfolders for PDF, Markdown, TXT, and Images (OCR)</span>
+              <div class="index-input-wrap">
+                <input id="folder" type="text" placeholder="/Users/you/Documents" value="data/advanced_test_corpus">
+                <button id="index-btn" class="primary">Start Indexing</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Indexing Progress Bar & Log Stream -->
+          <div id="indexing-progress-card" class="indexing-progress-card hidden">
+            <div class="progress-top">
+              <div class="progress-info">
+                <span class="spinner"></span>
+                <b id="progress-status-text">Indexing in background...</b>
+                <small id="progress-file-text"></small>
+              </div>
+              <button id="cancel-index-btn" class="secondary small">Cancel</button>
+            </div>
+            <div class="progress-bar-track">
+              <div id="progress-bar-fill" class="progress-bar-fill"></div>
+            </div>
+            <div class="progress-log-wrap">
+              <div class="log-label">EXTRACTION LOG STREAM</div>
+              <pre id="indexing-logs" class="log-terminal"></pre>
+            </div>
+          </div>
+
+          <!-- Documents Table Browser -->
+          <div class="library-table-section">
+            <div class="table-header-controls">
+              <div class="table-title">
+                <b>Indexed Documents</b>
+                <small id="library-table-count">Loading...</small>
+              </div>
+              <div class="table-filter-wrap">
+                <input id="library-filter-input" type="search" placeholder="Filter files by title, path, tag...">
+              </div>
+            </div>
+
+            <div class="table-wrap">
+              <table class="data-table" id="library-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>TITLE</th>
+                    <th>TYPE</th>
+                    <th>PAGES</th>
+                    <th>SIZE</th>
+                    <th>MODIFIED</th>
+                    <th>METHOD</th>
+                    <th>TAGS</th>
+                    <th>ACTIONS</th>
+                  </tr>
+                </thead>
+                <tbody id="library-table-body">
+                  <tr><td colspan="9" class="loading-td">Loading collection...</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="pagination-bar">
+              <button id="page-prev-btn" class="small secondary" disabled>← Previous</button>
+              <span id="page-indicator">Page 1</span>
+              <button id="page-next-btn" class="small secondary">Next →</button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- 3. DEVELOPER CONSOLE & DATABASE INSPECTOR VIEW -->
+      <div id="view-developer" class="view-panel hidden">
+        <section class="dev-section">
+          <div class="eyebrow">ENGINE TRANSPARENCY &amp; DIAGNOSTICS</div>
+          <h2>Developer Console &amp; Database Browser</h2>
+          <p class="section-copy">Direct, zero-abstraction visibility into SQLite storage, inverted postings, memory graph nodes, and extraction records.</p>
+
+          <!-- System Diagnostics Grid -->
+          <div class="stats-grid" id="dev-stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">DOCUMENTS</div>
+              <div class="stat-val" id="stat-docs">-</div>
+              <div class="stat-sub" id="stat-docs-sub">Local records</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">DATABASE SIZE</div>
+              <div class="stat-val" id="stat-db-size">-</div>
+              <div class="stat-sub" id="stat-db-path">library.db</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">INDEX VOCABULARY</div>
+              <div class="stat-val" id="stat-terms">-</div>
+              <div class="stat-sub">Unique terms</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">POSTINGS</div>
+              <div class="stat-val" id="stat-postings">-</div>
+              <div class="stat-sub">Term-document links</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">GRAPH CONCEPTS</div>
+              <div class="stat-val" id="stat-concepts">-</div>
+              <div class="stat-sub">Cluster topics</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">GRAPH EDGES</div>
+              <div class="stat-val" id="stat-edges">-</div>
+              <div class="stat-sub">Associative pathways</div>
+            </div>
+          </div>
+
+          <div class="dev-block">
+            <div class="dev-block-header">
+              <div>
+                <b>Local AI Meaning Index</b>
+                <small id="semantic-status">Uses a local Ollama embedding model when available</small>
+              </div>
+              <button id="build-semantic-btn" class="secondary">Build Local AI Index</button>
+            </div>
+          </div>
+
+          <div class="dev-block">
+            <div class="dev-block-header">
+              <div>
+                <b>macOS Spotlight</b>
+                <small>Publish AFTERIMAGE document metadata to Spotlight</small>
+              </div>
+              <button id="sync-spotlight-btn" class="secondary">Sync to Spotlight</button>
+            </div>
+          </div>
+
+          <!-- Interactive SQL Workbench -->
+          <div class="dev-block">
+            <div class="dev-block-header">
+              <div>
+                <b>Interactive SQL Query Workbench</b>
+                <small>Execute read-only queries against the live SQLite store</small>
+              </div>
+              <div class="preset-queries">
+                <span>PRESETS:</span>
+                <button class="preset-btn" data-sql="SELECT id, title, file_type, size_bytes, datetime(modified_at_epoch_seconds, 'unixepoch') AS modified, extraction_method FROM documents ORDER BY id DESC LIMIT 10;">Recent Files</button>
+                <button class="preset-btn" data-sql="SELECT file_type, count(*) AS count, round(avg(size_bytes)/1024, 1) AS avg_kb FROM documents GROUP BY file_type;">By File Type</button>
+                <button class="preset-btn" data-sql="SELECT id, title, page_count, length(extracted_text) AS chars, tags FROM documents WHERE extraction_method != '' LIMIT 10;">Extraction Records</button>
+              </div>
+            </div>
+
+            <div class="sql-editor-wrap">
+              <textarea id="sql-input" rows="3" spellcheck="false" placeholder="SELECT * FROM documents LIMIT 10;"></textarea>
+              <div class="sql-action-row">
+                <button id="run-sql-btn" class="primary">Execute Query ↗</button>
+                <span id="sql-status" class="sql-status"></span>
+              </div>
+            </div>
+
+            <div id="sql-results-wrap" class="sql-results-wrap hidden">
+              <div class="table-wrap">
+                <table class="data-table" id="sql-results-table">
+                  <thead id="sql-table-head"></thead>
+                  <tbody id="sql-table-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer class="footer">
+        <span>MADE FOR THE THINGS YOU CAN'T QUITE PLACE.</span>
+        <span>LOCAL-FIRST <i>·</i> EXPLAINABLE <i>·</i> YOURS</span>
+      </footer>
+    </main>
+  </div>
+
+  <!-- Document & Extraction Inspector Modal -->
+  <div id="doc-modal" class="modal hidden">
+    <div class="modal-card doc-modal-card">
+      <div class="modal-header">
+        <div>
+          <div class="modal-badge-row">
+            <span class="badge" id="modal-type-badge">TXT</span>
+            <span class="badge extraction-badge" id="modal-method-badge">Native Text</span>
+            <span class="badge" id="modal-page-count-badge">1 Page</span>
+          </div>
+          <h2 id="modal-doc-title">Document Title</h2>
+          <small id="modal-doc-path" class="path-sub"></small>
+        </div>
+        <button class="modal-close" id="close-doc-modal">×</button>
+      </div>
+
+      <div class="modal-body-split">
+        <!-- Left: Text Viewer with Page Switcher -->
+        <div class="modal-text-pane">
+          <div class="pane-toolbar">
+            <div class="page-pills" id="modal-page-pills"></div>
+            <button class="small secondary" id="modal-open-original-btn">Open Original ↗</button>
+          </div>
+          <div class="text-content-wrap">
+            <pre id="modal-extracted-text" class="extracted-text-view"></pre>
+          </div>
+        </div>
+
+        <!-- Right: Metadata & Notes Editor -->
+        <div class="modal-meta-pane">
+          <div class="meta-section">
+            <label>EXTRACTION QUALITY &amp; DETAILS</label>
+            <div class="meta-row"><span>Status:</span> <b class="text-success">Extracted</b></div>
+            <div class="meta-row"><span>Method:</span> <b id="modal-detail-method">-</b></div>
+            <div class="meta-row"><span>File Size:</span> <b id="modal-detail-size">-</b></div>
+            <div class="meta-row"><span>Modified:</span> <b id="modal-detail-modified">-</b></div>
+          </div>
+
+          <div class="meta-section">
+            <label>EDITABLE METADATA</label>
+            <div class="form-group">
+              <label for="modal-edit-title">Display Title</label>
+              <input id="modal-edit-title" type="text">
+            </div>
+            <div class="form-group">
+              <label for="modal-edit-tags">Tags (comma separated)</label>
+              <input id="modal-edit-tags" type="text" placeholder="homework, java, assignment-1">
+            </div>
+            <div class="form-group">
+              <label for="modal-edit-notes">Personal Memory Notes</label>
+              <textarea id="modal-edit-notes" rows="4" placeholder="Add context: 'I opened this last week for the OOP lab exam'"></textarea>
+            </div>
+            <button id="modal-save-meta-btn" class="primary wide">Save Metadata</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help Guide Modal -->
+  <div id="help-modal" class="modal hidden">
+    <div class="modal-card">
+      <button class="modal-close" id="close-help">×</button>
+      <div class="eyebrow">HUMAN-LIKE MEMORY RETRIEVAL</div>
+      <h2>Search the way you remember.</h2>
+      <p>AFTERIMAGE doesn't force you to remember filenames or exact keyword strings. Its retrieval pipeline extracts recollections using human memory heuristics:</p>
+      <ul class="help-list">
+        <li><b>Natural Sentences &amp; Fillers</b> — Phrases like <i>“I saw something in the OOPS that says...”</i> are stripped down to core concepts automatically.</li>
+        <li><b>Temporal Recollection</b> — Mentioning <i>“last week”</i>, <i>“yesterday”</i>, or <i>“last month”</i> prioritizes files modified within that exact time frame.</li>
+        <li><b>Typo &amp; Irregular Typing</b> — Misspellings like <i>“assignmnet”</i> or <i>“schedulng”</i> are instantly mapped to their true intent.</li>
+        <li><b>Concept Knowledge Graph</b> — Searching for <i>“OOPS”</i> expands into <i>classes, objects, inheritance, polymorphism</i>.</li>
+        <li><b>Exact Page References</b> — PDF and multi-page results highlight the exact page where your thoughts match.</li>
+      </ul>
+      <p class="muted">All indexing and retrieval runs locally on your machine.</p>
+      <button class="primary wide" id="got-it">Got it</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status"></div>
+  <script src="app.js"></script>
+</body>
+</html>

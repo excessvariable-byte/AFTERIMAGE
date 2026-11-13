@@ -1,0 +1,9 @@
+Operating System Virtual Memory Internals
+
+Virtual memory gives each process an address space that is translated into physical memory. A virtual address is divided into a virtual page number and an offset. Multi-level page tables map virtual pages to physical frames and store permissions, validity, and status bits. Page-table walks may require several memory accesses.
+
+A Translation Lookaside Buffer (TLB) caches recently used address translations. A TLB hit avoids a page-table walk, while a TLB miss requires hardware or operating-system assistance to find the mapping. Address-space switches may require tagged TLB entries or invalidation to prevent one process from using another process's translations.
+
+A page fault occurs when a process accesses a page that is not currently mapped with the required permissions. The fault handler may load a page from a file or swap area, allocate a zero-filled page, or terminate the process for an invalid access. Demand paging delays loading until the page is actually referenced.
+
+Page replacement policies decide which resident page to evict under memory pressure. Least Recently Used (LRU) approximates temporal locality by preferring pages that have not been used recently. Exact LRU can be expensive, so operating systems use clock algorithms and working-set approximations. Copy-on-write and memory-mapped files are additional virtual-memory mechanisms.

@@ -1,0 +1,20 @@
+# CMake build output
+build/
+build-sanitize/
+cmake-build-*/
+
+# macOS / editor files
+.DS_Store
+.vscode/.browse.VC.db
+.vscode/.案件
+
+# Local runtime data (keep sample data tracked)
+data/library/
+data/index/
+
+# Local SQLite database and sidecar files
+data/afterimage.db
+data/afterimage.db-shm
+data/afterimage.db-wal
+
+build-clang/

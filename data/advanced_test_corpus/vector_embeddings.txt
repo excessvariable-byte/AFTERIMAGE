@@ -1,0 +1,9 @@
+Vector Embeddings and Approximate Nearest Neighbour Search
+
+A vector embedding maps an object such as a sentence, image, or code fragment into a point in a high-dimensional vector space. Semantically related objects should often have nearby representations, although embedding quality depends on the training objective and domain.
+
+Two common distance measures are Euclidean L2 distance and cosine similarity. L2 measures the square-root of summed squared coordinate differences. Cosine similarity measures the angle between vectors and is often useful when vector magnitude is less important than direction. Implementations should normalise vectors consistently and account for dimensionality, numeric precision, and memory layout.
+
+Exact nearest-neighbour search can become expensive as the dataset grows. Approximate Nearest Neighbour (ANN) indexes trade a controlled amount of recall for lower latency. HNSW builds a navigable small-world graph with multiple hierarchy levels, allowing greedy traversal from sparse upper layers into a dense base layer. IVF-PQ first partitions vectors into inverted-file clusters and then compresses residual vectors with Product Quantization. Search probes selected clusters and compares compact codes.
+
+The practical design space includes recall at k, query latency, index build time, update cost, memory footprint, and filtering support. HNSW and IVF-PQ are complementary approaches rather than universal replacements for exact vector search.

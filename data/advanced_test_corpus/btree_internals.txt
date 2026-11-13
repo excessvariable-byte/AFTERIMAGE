@@ -1,0 +1,9 @@
+B-Tree Internals: Nodes, Fan-Out, Splits, and Latching
+
+A B-Tree is a balanced search tree designed for storage systems that move data in pages or blocks. Each node stores multiple sorted keys and child pointers. Its fan-out is the maximum number of child subtrees that an internal node can reference. Large fan-out reduces tree height and therefore reduces the number of page reads required to find a key.
+
+When an insertion fills a node, the implementation performs a node split. A separator key is promoted into the parent, while keys and child pointers are divided between the old node and a new sibling. A split can propagate toward the root, and a root split increases the height of the tree. Deletion may cause underflow; a node can borrow a key from a sibling or merge with a sibling while preserving ordering invariants.
+
+Concurrent B-Tree implementations must coordinate readers and writers. Page latches protect in-memory node contents while a thread examines or modifies a page. Latch coupling, also called crabbing, acquires a child latch before releasing the parent latch. This prevents unsafe traversal during structural changes. A latch is a short-lived concurrency primitive and is not the same as a transaction lock.
+
+Important implementation concerns include separator-key invariants, minimum occupancy, sibling links for range scans, write ordering, and recovery after a split is interrupted. B-Tree internals are central to database storage engines and file systems.

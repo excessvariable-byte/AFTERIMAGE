@@ -1,0 +1,9 @@
+Reactive and Asynchronous Programming: Reactor, Event Loops, and Backpressure
+
+The Reactor pattern uses an event demultiplexer to wait for readiness notifications from many I/O sources. A single-threaded event loop can process callbacks for sockets, timers, and other asynchronous events without dedicating one thread to every connection. Linux commonly exposes readiness through epoll, while macOS and BSD systems provide kqueue.
+
+An event loop repeatedly waits for ready events, dispatches handlers, and returns to polling. Handlers should avoid blocking operations because a single slow callback can delay unrelated connections. CPU-heavy work may be moved to a worker pool while completion is posted back to the event loop.
+
+Reactive streams describe asynchronous sequences with explicit demand. Backpressure limits the amount of work a producer can send to a slower consumer. Without backpressure, queues may grow without bound, causing high memory use and latency. Strategies include bounded buffers, dropping, sampling, or slowing the producer.
+
+Reactor patterns and event loops provide scalable I/O concurrency, but they require attention to cancellation, ordering, error propagation, fairness, and shutdown. epoll and kqueue are platform-specific event notification interfaces that underpin many network servers.

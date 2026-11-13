@@ -1,0 +1,9 @@
+Database Indexing Strategies: B-Trees and LSM-Trees
+
+A B-Tree index keeps keys in ordered pages and supports point lookups and range scans with logarithmic tree height. Many database B-Tree implementations update pages in place, using page splits, merges, write-ahead logging, and latches to coordinate readers and writers. In-place updates can provide efficient reads but may cause random writes and page contention.
+
+A Log-Structured Merge Tree (LSM-Tree) buffers writes in memory, flushes sorted runs to disk, and later merges files through compaction. Immutable sorted-string tables (SSTables) store ordered key-value records and sparse indexes. Bloom filters can avoid unnecessary disk reads for keys that are absent from a table.
+
+LSM-Trees turn many random writes into sequential writes, which can improve write throughput. Their costs include read amplification, write amplification during compaction, and temporary space usage. Compaction strategies include size-tiered and leveled approaches. Tombstones record deletions until compaction can safely remove obsolete versions.
+
+Choosing between an in-place update B-Tree and a write-optimised LSM-Tree depends on read/write ratio, range-scan requirements, write amplification, cache behavior, latency targets, and storage hardware. Neither structure is universally best.
